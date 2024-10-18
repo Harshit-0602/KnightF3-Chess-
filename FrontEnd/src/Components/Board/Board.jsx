@@ -1,23 +1,5 @@
-import { useRecoilState } from 'recoil';
 import './Board.css'
-import { grid_init } from '../../Store/grid';
-
-const Cell = ({row, col}) => {
-    // console.log(`row = ${row} ,  col = ${col} , type = ${type}`);
-    let color = "light";
-    if ((row + col) % 2) {
-      color = "dark";
-  }
-  const [grid, setGrid] = useRecoilState(grid_init);
-  const name = grid[row][col].piece;
-  const path = `/${name}.png`;
-    return (
-      <div className={`square ${color}`}>
-        {name !== "" && <img src={path} alt={name} />}
-      </div>
-    );
-}
-
+import { Cell } from '../Cell/Cell';
 const Board = () => {
       const renderCell = () => {
         const cells = [];
