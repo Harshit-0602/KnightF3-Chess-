@@ -45,7 +45,7 @@
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
-  transition: all 0.2s ease; /* Smooth transitions for hover effects */
+  transition: all 0s ease; /* Smooth transitions for hover effects */
 }
 
 .square img {
@@ -68,13 +68,20 @@
 }
 
 .highlight {
-    background-color: rgba(236, 231, 69, 0.5); /* Light yellow with transparency */
-    border: 2px solid rgba(236, 231, 69, 0.8); /* Light border for distinction */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Shadow effect */
+    background-color: rgba(236, 231, 69, 0.6); /* Brighter yellow */
+    border: 3px dashed rgba(236, 231, 69, 0.9); /* Dashed yellow border */
+    box-shadow: 0 0 15px rgba(236, 231, 69, 0.7); /* Yellowish shadow */
 }
 
 .underAttack {
-    background-color: rgba(255, 51, 51, 0.3); /* Semi-transparent red */
-    border: 2px solid rgba(255, 0, 0, 0.8); /* Thinner red border */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Shadow effect */
+    background-color: rgba(255, 69, 69, 0.5); /* Stronger red, slightly transparent */
+    border: 3px solid rgba(255, 0, 0, 1); /* Thicker solid red border */
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.8); /* Red shadow */
 }
+
+.Check {
+    background-color: rgba(255, 99, 71, 0.6); /* Orange-red for differentiation */
+    border: 4px double rgba(255, 99, 71, 1); /* Double orange-red border */
+    box-shadow: 0 0 20px rgba(255, 99, 71, 0.9); /* Strong orange-red shadow */
+}
+
