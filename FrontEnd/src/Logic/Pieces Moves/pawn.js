@@ -2,6 +2,8 @@
 const positionsEqual = (pos1, pos2) =>
   pos1[0] === pos2[0] && pos1[1] === pos2[1];
 
+let can_move = false;
+
 // Helper function to check if a position is valid
 const valid = (i, j) => {
   return i >= 0 && j >= 0 && i < 8 && j < 8;
@@ -28,6 +30,7 @@ const handlePawnMove = (grid, r, c, direction, color, myPiece, king) => {
         positionsEqual(pos, [targetRow, c])
       );
       if (isAllowed) {
+        can_move = true;
         grid[targetRow][c].highlight = true; // Highlight valid move
       }
     } else if (isPinned !== -1) {
@@ -35,9 +38,11 @@ const handlePawnMove = (grid, r, c, direction, color, myPiece, king) => {
         positionsEqual(pos, [targetRow, c])
       );
       if (isPinnedAllowed) {
+        can_move = true;
         grid[targetRow][c].highlight = true; // Highlight valid move if pinned
       }
     } else {
+      can_move = true;
       grid[targetRow][c].highlight = true; // Highlight valid move if neither checked nor pinned
     }
   }
@@ -45,13 +50,18 @@ const handlePawnMove = (grid, r, c, direction, color, myPiece, king) => {
   // Double move from starting position
   if ((color === "w" && r === 6) || (color === "b" && r === 1)) {
     const doubleMoveRow = r + direction * 2;
-    if (valid(doubleMoveRow, c) && grid[doubleMoveRow][c].piece === "") {
+    if (
+      valid(doubleMoveRow, c) &&
+      grid[doubleMoveRow][c].piece === "" &&
+      grid[r + direction][c].piece === ""
+    ) {
       // Check for pin or check when doing a double move
       if (king.check.status) {
         const isAllowed = king.check.allowed.some((pos) =>
           positionsEqual(pos, [doubleMoveRow, c])
         );
         if (isAllowed) {
+          can_move = true;
           grid[doubleMoveRow][c].highlight = true; // Highlight valid double move
         }
       } else if (isPinned !== -1) {
@@ -59,9 +69,11 @@ const handlePawnMove = (grid, r, c, direction, color, myPiece, king) => {
           (pos) => positionsEqual(pos, [doubleMoveRow, c])
         );
         if (isPinnedAllowed) {
+          can_move = true;
           grid[doubleMoveRow][c].highlight = true; // Highlight valid double move if pinned
         }
       } else {
+        can_move = true;
         grid[doubleMoveRow][c].highlight = true; // Highlight valid double move if not pinned or checked
       }
     }
@@ -82,13 +94,20 @@ const handlePawnMove = (grid, r, c, direction, color, myPiece, king) => {
           const isAllowed = king.check.allowed.some((pos) =>
             positionsEqual(pos, [r + dRow, c + dCol])
           );
-          if (isAllowed) targetCell.underAttack = true; // Mark as under attack
+          if (isAllowed) {
+            can_move = true;
+            targetCell.underAttack = true;
+          } // Mark as under attack
         } else if (isPinned !== -1) {
           const isPinnedAllowed = king.pinned[isPinned].pinned_allowed.some(
             (pos) => positionsEqual(pos, [r + dRow, c + dCol])
           );
-          if (isPinnedAllowed) targetCell.underAttack = true; // Mark as under attack if pinned
+          if (isPinnedAllowed)  {
+            can_move = true;
+            targetCell.underAttack = true;
+          } // Mark as under attack if pinned
         } else {
+          can_move = true;
           targetCell.underAttack = true; // Mark as under attack if not in check or pinned
         }
       }
@@ -98,6 +117,7 @@ const handlePawnMove = (grid, r, c, direction, color, myPiece, king) => {
 
 // Main function for pawn movement
 export const pawn = (r, c, mat, king) => {
+  can_move = false;
   let grid = mat.map((row) => row.map((cell) => ({ ...cell }))); // Create a copy of the grid
   let myPiece = grid[r][c].piece;
   let color = myPiece[0]; // Get the color of the pawn
@@ -106,5 +126,5 @@ export const pawn = (r, c, mat, king) => {
   // Handle pawn movements
   handlePawnMove(grid, r, c, direction, color, myPiece, king);
 
-  return grid; // Return the modified grid
+  return {grid,can_move}; // Return the modified grid
 };

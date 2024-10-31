@@ -63,7 +63,7 @@ const handleAttack = (row, col, validOpponent, grid, myColor, king) => {
         return false; // Invalid opponent piece
     } else {
         if ((cur.slice(1) == "p")) {
-            console.log(Math.abs(king.row - row));
+            // console.log(Math.abs(king.row - row));
             if (Math.abs(king.row - row) > 1) return false;
         }
         if (cur.slice(1) == "king") {
@@ -206,8 +206,7 @@ const deepClone = (obj) => JSON.parse(JSON.stringify(obj));
 
 // Function to check the king's threats based on its current position
 export const Check_Validate = (row, col, mat) => {
-    console.log("Checking  = " + row +" " +col);
-    
+    // console.log("Checking  = " + row +" " +col);
     let grid = mat.map((row) => row.map((cell) => ({ ...cell }))); // Create a deep copy of the board
     let king = grid[row][col]; // Get the king piece
     let opponent = king.piece[0] === "b" ? "w" : "b"; // Determine the opponent's color
@@ -280,7 +279,7 @@ export const Check_Validate = (row, col, mat) => {
     let clonedFinalObject = deepClone(Final_object);
     clonedFinalObject.pos.row = row;
     clonedFinalObject.pos.col = col;
-    console.log(clonedFinalObject);
+    // console.log(clonedFinalObject);
     
     // Return the cloned object with updated check and pin status
     return clonedFinalObject;

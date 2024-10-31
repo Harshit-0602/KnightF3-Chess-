@@ -84,6 +84,91 @@ const grid = [
   ], // White pieces
 ];
 
+const stalemateGrid = [
+  [
+    { piece: "", highlight: false, underAttack: false }, // Black rook
+    { piece: "", highlight: false, underAttack: false }, // Empty cell
+    { piece: "", highlight: false, underAttack: false }, // Black bishop
+    { piece: "", highlight: false, underAttack: false }, // Empty cell
+    { piece: "bking", highlight: false, underAttack: false }, // Black king
+    { piece: "", highlight: false, underAttack: false }, // Empty cell
+    { piece: "", highlight: false, underAttack: false }, // Empty cell
+    { piece: "", highlight: false, underAttack: false }, // Black rook
+  ], // Black pieces
+  [
+    { piece: "", highlight: false, underAttack: false }, // Black pawn
+    { piece: "", highlight: false, underAttack: false }, // Empty cell
+    { piece: "wq", highlight: false, underAttack: false }, // Black pawn
+    { piece: "", highlight: false, underAttack: false }, // Empty cell
+    { piece: "", highlight: false, underAttack: false }, // Empty cell
+    { piece: "", highlight: false, underAttack: false }, // Empty cell
+    { piece: "", highlight: false, underAttack: false }, // Empty cell
+    { piece: "", highlight: false, underAttack: false }, // Empty cell
+  ], // Empty row
+  [
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "wp", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+  ], // Empty row
+  [
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+  ], // Empty row
+  [
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+  ], // Empty row
+  [
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+  ], // Empty row
+  [
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+  ], // Empty row
+  [
+    { piece: "", highlight: false, underAttack: false }, // White pawn
+    { piece: "", highlight: false, underAttack: false }, // Empty cell
+    { piece: "wb", highlight: false, underAttack: false }, // Empty cell
+    { piece: "", highlight: false, underAttack: false }, // Empty cell
+    { piece: "wking", highlight: false, underAttack: false }, // White king
+    { piece: "", highlight: false, underAttack: false }, // White pawn
+    { piece: "", highlight: false, underAttack: false }, // Empty cell
+    { piece: "", highlight: false, underAttack: false }, // Empty cell
+  ], // White pieces
+];
+
+
+
 export const grid_init = atom({
   key: "grid_init",
   default: grid, // Set the default value to the initialized grid

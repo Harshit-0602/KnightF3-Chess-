@@ -1,4 +1,7 @@
 // Helper function to process individual cells based on the queen's movement
+
+let can_move = false;
+
 const processMove = (grid, r, c, my, king, pinned) => {
     let cell = grid[r][c];
 
@@ -7,9 +10,11 @@ const processMove = (grid, r, c, my, king, pinned) => {
         if (king.check.allowed.some((pos) => pos[0] === r && pos[1] === c)) {
             if (cell.piece[0] === my.piece[0]) return false; // Same color piece blocks the path
             if (cell.piece !== "" && cell.piece[0] !== my.piece[0]) {
+                can_move = true;
                 cell.underAttack = true; // Opponent's piece under attack
                 return false; // Stop after attacking opponent's piece
             }
+            can_move = true;
             cell.highlight = true; // Highlight as valid move
             return true; // Continue moving in this direction
         }
@@ -23,9 +28,11 @@ const processMove = (grid, r, c, my, king, pinned) => {
         ) {
             if (cell.piece[0] === my.piece[0]) return false; // Same color piece blocks the path
             if (cell.piece !== "" && cell.piece[0] !== my.piece[0]) {
+                can_move = true;
                 cell.underAttack = true; // Opponent's piece under attack
                 return false; // Stop after attacking opponent's piece
             }
+            can_move = true;
             cell.highlight = true; // Highlight as valid move
             return true; // Continue moving in this direction
         }
@@ -34,9 +41,11 @@ const processMove = (grid, r, c, my, king, pinned) => {
     else {
         if (cell.piece[0] === my.piece[0]) return false; // Same color piece blocks the path
         if (cell.piece !== "" && cell.piece[0] !== my.piece[0]) {
+            can_move = true;
             cell.underAttack = true; // Opponent's piece under attack
             return false; // Stop after attacking opponent's piece
         }
+        can_move = true;
         cell.highlight = true; // Highlight as valid move
         return true; // Continue moving in this direction
     }
@@ -55,7 +64,7 @@ const moveInDirection = (grid, r, c, dr, dc, my, king, pinned) => {
 export const queen = (r, c, mat, king) => {
     let grid = mat.map((row) => row.map((cell) => ({ ...cell })));
     let my = grid[r][c];
-
+    can_move = false;
     // Determine if the queen is pinned
     let pinned = -1;
     for (let i = 0; i < king.pinned.length; i++) {
@@ -82,5 +91,5 @@ export const queen = (r, c, mat, king) => {
         moveInDirection(grid, r + dr, c + dc, dr, dc, my, king, pinned);
     }
 
-    return grid;
+    return {grid,can_move};
 };

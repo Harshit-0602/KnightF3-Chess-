@@ -1,15 +1,20 @@
 // Helper function to handle highlighting or marking under attack
+
+let can_move = false;
 const fn = (cell, my) => {
-  if (cell.piece[0] === my.piece[0]) return; // Same color piece, can't move
-  else if (cell.piece !== "" && cell.piece[0] !== my.piece[0]) {
-    cell.underAttack = true; // Opponent piece, mark as under attack
-    return;
-  }
-  cell.highlight = true; // Empty cell, highlight it
+    if (cell.piece[0] === my.piece[0]) return; // Same color piece, can't move
+    else if (cell.piece !== "" && cell.piece[0] !== my.piece[0]) {
+        can_move = true;
+        cell.underAttack = true; // Opponent piece, mark as under attack
+        return;
+    }
+    can_move = true;
+    cell.highlight = true; // Empty cell, highlight it
 };
 
 // Main knight function
 export const knight = (r, c, mat, king) => {
+    can_move = false;
     let grid = mat.map((row) => row.map((cell) => ({ ...cell }))); // Copy the grid
     let my = grid[r][c]; // Current knight's position
 
@@ -65,5 +70,5 @@ export const knight = (r, c, mat, king) => {
         }
     });
 
-    return grid;
+    return {grid,can_move};
 };

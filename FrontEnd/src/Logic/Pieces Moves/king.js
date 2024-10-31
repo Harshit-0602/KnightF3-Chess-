@@ -1,5 +1,7 @@
 import { Check_Validate } from "../CheckLogic";
 
+let can_move = false;
+
 // Helper function to check if a position is valid
 const isValidPosition = (r, c,grid,cur_r,cur_c) => {
     if (r >= 0 && r < 8 && c >= 0 && c < 8) {
@@ -23,10 +25,11 @@ const handleCell = (cell, myPiece) => {
     
     if (cell.piece !== "" && cell.piece[0] === myPiece[0]) return; // Same color piece, cannot move
     if (cell.piece !== "" && cell.piece[0] != myPiece[0]) {
-        
+        can_move = true;
         cell.underAttack = true; // Mark opponent's piece as under attack
         return;
     }
+    can_move = true;
     cell.highlight = true; // Highlight the cell for a valid move
 };
 
@@ -53,9 +56,12 @@ const checkSurroundingCells = (grid, r, c, myPiece) => {
 };
 
 // Main function for the king's movement
-export const king = (r, c, mat,king) => {
+export const king = (r, c, mat, king) => {
+    can_move = false;
+    
     const grid = mat.map((row) => row.map((cell) => ({ ...cell }))); // Create a copy of the grid
     const myPiece = grid[r][c]; // Get the king's piece
     checkSurroundingCells(grid, r, c, myPiece); // Check surrounding cells for movements
-    return grid; // Return the modified grid
+    // console.log(`${r} , ${c}, ${can_move}`);
+    return {grid,can_move}; // Return the modified grid
 };
