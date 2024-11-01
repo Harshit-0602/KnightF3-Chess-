@@ -43,3 +43,12 @@ export const king = atom({
         }
     }
 });
+
+export const Elpassant = atom({
+    key: "Elpassant",
+    default: {
+        row: -1,
+        col: -1,
+        color: "none"
+    }
+});

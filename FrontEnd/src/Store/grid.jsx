@@ -96,16 +96,27 @@ const stalemateGrid = [
     { piece: "", highlight: false, underAttack: false }, // Black rook
   ], // Black pieces
   [
-    { piece: "", highlight: false, underAttack: false }, // Black pawn
+    { piece: "wp", highlight: false, underAttack: false }, // Black pawn
     { piece: "", highlight: false, underAttack: false }, // Empty cell
     { piece: "wq", highlight: false, underAttack: false }, // Black pawn
     { piece: "", highlight: false, underAttack: false }, // Empty cell
-    { piece: "", highlight: false, underAttack: false }, // Empty cell
+    { piece: "bp", highlight: false, underAttack: false }, // Empty cell
     { piece: "", highlight: false, underAttack: false }, // Empty cell
     { piece: "", highlight: false, underAttack: false }, // Empty cell
     { piece: "", highlight: false, underAttack: false }, // Empty cell
   ], // Empty row
   [
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+  ], // Empty row
+  [
+    { piece: "", highlight: false, underAttack: false }, // Empty row
     { piece: "", highlight: false, underAttack: false }, // Empty row
     { piece: "", highlight: false, underAttack: false }, // Empty row
     { piece: "", highlight: false, underAttack: false }, // Empty row
@@ -113,6 +124,15 @@ const stalemateGrid = [
     { piece: "wp", highlight: false, underAttack: false }, // Empty row
     { piece: "", highlight: false, underAttack: false }, // Empty row
     { piece: "", highlight: false, underAttack: false }, // Empty row
+  ], // Empty row
+  [
+    { piece: "bp", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "bp", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "", highlight: false, underAttack: false }, // Empty row
     { piece: "", highlight: false, underAttack: false }, // Empty row
   ], // Empty row
   [
@@ -127,27 +147,7 @@ const stalemateGrid = [
   ], // Empty row
   [
     { piece: "", highlight: false, underAttack: false }, // Empty row
-    { piece: "", highlight: false, underAttack: false }, // Empty row
-    { piece: "", highlight: false, underAttack: false }, // Empty row
-    { piece: "", highlight: false, underAttack: false }, // Empty row
-    { piece: "", highlight: false, underAttack: false }, // Empty row
-    { piece: "", highlight: false, underAttack: false }, // Empty row
-    { piece: "", highlight: false, underAttack: false }, // Empty row
-    { piece: "", highlight: false, underAttack: false }, // Empty row
-  ], // Empty row
-  [
-    { piece: "", highlight: false, underAttack: false }, // Empty row
-    { piece: "", highlight: false, underAttack: false }, // Empty row
-    { piece: "", highlight: false, underAttack: false }, // Empty row
-    { piece: "", highlight: false, underAttack: false }, // Empty row
-    { piece: "", highlight: false, underAttack: false }, // Empty row
-    { piece: "", highlight: false, underAttack: false }, // Empty row
-    { piece: "", highlight: false, underAttack: false }, // Empty row
-    { piece: "", highlight: false, underAttack: false }, // Empty row
-  ], // Empty row
-  [
-    { piece: "", highlight: false, underAttack: false }, // Empty row
-    { piece: "", highlight: false, underAttack: false }, // Empty row
+    { piece: "wp", highlight: false, underAttack: false }, // Empty row
     { piece: "", highlight: false, underAttack: false }, // Empty row
     { piece: "", highlight: false, underAttack: false }, // Empty row
     { piece: "", highlight: false, underAttack: false }, // Empty row
@@ -171,5 +171,5 @@ const stalemateGrid = [
 
 export const grid_init = atom({
   key: "grid_init",
-  default: grid, // Set the default value to the initialized grid
+  default: stalemateGrid, // Set the default value to the initialized grid
 });
