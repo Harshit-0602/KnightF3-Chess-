@@ -1,6 +1,6 @@
 import { useRecoilState } from "recoil";
 import { grid_init } from "../../Store/grid";
-import { Elpassant, king, selected, turn } from "../../Store/other";
+import { Castling, Elpassant, king, selected, turn } from "../../Store/other";
 import { revert } from "../../Logic/RevertMoves";
 import { Moves } from "../../Logic/PossibleMoves";
 import { Check_Validate } from "../../Logic/CheckLogic";
@@ -12,6 +12,7 @@ export const Cell = ({ row, col }) => {
   const [t, setT] = useRecoilState(turn);
   const [K, setK] = useRecoilState(king);
   const [El_passant, setEl_passant] = useRecoilState(Elpassant);
+  const [Castle, setCastle] = useRecoilState(Castling);
 
   let isMate = false;
   let play = "Black";
@@ -76,6 +77,36 @@ export const Cell = ({ row, col }) => {
     }
   };
 
+  const Blocking_Castling = (piece, piece_name) => {
+    let player = piece[0] == "w" ? Castle.w : Castle.b;
+    const castleCopy = JSON.parse(JSON.stringify(Castle));
+    if (piece_name === "r") {
+      if (player.q_r.row === sel.row && player.q_r.col === sel.col) {
+        if (piece[0] === "w") {
+          castleCopy.w.q_r.eligible = false;
+        } else {
+          castleCopy.b.q_r.eligible = false;
+        }
+      } else if (player.r.row === sel.row && player.r.col === sel.col) {
+        if (piece[0] === "w") {
+          castleCopy.w.r.eligible = false;
+        } else {
+          castleCopy.b.r.eligible = false;
+        }
+      }
+    }
+    else if (piece_name === "king")
+    {
+      if (piece[0] == "w") {
+        castleCopy.w.king = false;
+      }
+      else {
+        castleCopy.b.king = false;
+      }
+    }
+    setCastle(castleCopy);
+  };
+
   // Executes piece movement and updates relevant states (like en passant)
   const movePiece = (row, col, mat) => {
     // If en passant capture is occurring, clear the captured pawn's position
@@ -83,15 +114,28 @@ export const Cell = ({ row, col }) => {
       mat[El_passant.row][El_passant.col].piece = "";
       mat[El_passant.row][El_passant.col].underAttack = false;
     }
-
     // Move piece to the new location and clear the previous cell
     mat[row][col].piece = mat[sel.row][sel.col].piece;
     mat[sel.row][sel.col].piece = "";
     let piece = mat[row][col].piece;
     let piece_name = piece.slice(1);
-
+    let diff = sel.col - col;
+    if (piece_name == "king" && Math.abs(diff) == 2) {
+      let rook_col = diff == -2 ? 7 : 0;
+      let rook_new_col = diff == -2 ? sel.col + 1 : sel.col - 1;
+      mat[row][rook_new_col].piece = mat[row][rook_col].piece;
+      mat[row][rook_col].piece = "";
+    }
+    Blocking_Castling(piece, piece_name);
     let new_row = -1;
     let new_col = -1;
+
+    // Blocking_Castling(piece, piece_name);
+    // handle_El_passant(row, col, mat, piece_name);
+    // // if (piece_name == "king")
+    // // {
+    // //   new_row=row
+    // // }
 
     // Track en passant state for the next turn
     handle_El_passant(row, col, mat, piece_name);
@@ -144,6 +188,50 @@ export const Cell = ({ row, col }) => {
     play = Check_Object_Opp.check.status ? "Check-Mate" : "Stale-Mate";
   };
 
+  const castle_row_checkandmove = (row,king_col,direction,mat) => {
+    let myKing = t === "w" ? K.w : K.b;
+    let myRook = t === "w" ? "wr" : "br";
+    console.log("Direction  = " + direction );
+    let end = direction == 1 ? 7 : 0;
+    for (let i = king_col + direction; i !=end; i = i + direction)
+    {
+      console.log(i);
+      if (mat[row][i].piece != "") return;
+    }
+    if (mat[row][end].piece != myRook) return;
+    if (myKing.check.status) return;
+    mat[row][king_col + direction].piece = mat[row][king_col].piece;
+    mat[row][king_col].piece = "";
+    let ob1= Check_Validate(row, king_col + direction, mat);
+    mat[row][king_col + 2 * direction].piece = mat[row][king_col + direction].piece;
+    mat[row][king_col + direction].piece = "";
+    let ob2=Check_Validate(row, king_col + 2 * direction, mat);
+    mat[row][king_col].piece = mat[row][king_col + 2 * direction].piece;
+    mat[row][king_col + 2 * direction].piece = "";
+    if (ob1.check.status || ob2.check.status) return;
+    mat[row][king_col + 2 * direction].highlight = true;
+  }
+
+  const Castle_highlight = (row, col, mat) => {
+    let myCastle = t == "w" ? Castle.w : Castle.b;
+    // const castleCopy = JSON.parse(JSON.stringify(Castle));
+    if (
+      myCastle.king &&
+      myCastle.q_r.eligible
+    )
+    {
+      // console.log("Q_R row = " + myCastle.q_r.row);
+      // console.log("Q_R col = " + myCastle.q_r.col);
+
+      castle_row_checkandmove(row, col, -1, mat);
+      }
+    if (
+      myCastle.king &&
+      myCastle.r.eligible 
+    )
+      castle_row_checkandmove(row, col, 1, mat);
+  }
+
   // Handles selecting a piece and updating possible moves
   const selectPiece = (row, col, mat) => {
     setSel({
@@ -159,7 +247,7 @@ export const Cell = ({ row, col }) => {
     let myKing = t === "w" ? K.w : K.b;
     const fn = Moves[piece];
     mat = fn(row, col, mat, myKing).grid;
-
+ 
     // Handle en passant attack highlight for pawns
     if (
       piece == "p" &&
@@ -169,7 +257,7 @@ export const Cell = ({ row, col }) => {
       let next_row = El_passant.color == "w" ? 1 : -1;
       mat[next_row + El_passant.row][El_passant.col].underAttack = true;
     }
-
+    if(piece=="king") Castle_highlight(row, col, mat);
     setGrid(mat);
   };
 

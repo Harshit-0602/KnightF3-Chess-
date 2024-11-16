@@ -52,3 +52,35 @@ export const Elpassant = atom({
         color: "none"
     }
 });
+
+export const Castling = atom({
+    key: "Castling",
+    default: {
+        b: {
+            king: true,
+            q_r: {
+                row: 0,
+                col: 0,
+                eligible: true,
+            },
+            r: {
+                row: 0,
+                col: 7,
+                eligible: true,
+            },
+        },
+        w: {
+            king: true,
+            q_r: {
+                row: 7,
+                col: 0,
+                eligible: true,
+            },
+            r: {
+                row: 7,
+                col: 7,
+                eligible: true,
+            },
+        },
+    },
+});

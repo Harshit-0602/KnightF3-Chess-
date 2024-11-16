@@ -1,7 +1,7 @@
 import { atom } from "recoil";
 
 // Initial Chess Board Setup with Modified Properties
-const grid = [
+const white_grid = [
   [
     { piece: "br", highlight: false, underAttack: false }, // Black rook
     { piece: "bk", highlight: false, underAttack: false }, // Black knight
@@ -84,9 +84,11 @@ const grid = [
   ], // White pieces
 ];
 
+
+
 const stalemateGrid = [
   [
-    { piece: "", highlight: false, underAttack: false }, // Black rook
+    { piece: "br", highlight: false, underAttack: false }, // Black rook
     { piece: "", highlight: false, underAttack: false }, // Empty cell
     { piece: "", highlight: false, underAttack: false }, // Black bishop
     { piece: "", highlight: false, underAttack: false }, // Empty cell
@@ -98,7 +100,7 @@ const stalemateGrid = [
   [
     { piece: "wp", highlight: false, underAttack: false }, // Black pawn
     { piece: "", highlight: false, underAttack: false }, // Empty cell
-    { piece: "wq", highlight: false, underAttack: false }, // Black pawn
+    { piece: "", highlight: false, underAttack: false }, // Black pawn
     { piece: "", highlight: false, underAttack: false }, // Empty cell
     { piece: "bp", highlight: false, underAttack: false }, // Empty cell
     { piece: "", highlight: false, underAttack: false }, // Empty cell
@@ -171,5 +173,5 @@ const stalemateGrid = [
 
 export const grid_init = atom({
   key: "grid_init",
-  default: stalemateGrid, // Set the default value to the initialized grid
+  default: white_grid, // Set the default value to the initialized grid
 });
