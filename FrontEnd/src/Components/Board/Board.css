@@ -1,41 +1,87 @@
-.board-bg {  
-  height: 100vh;  
-  width: 100vw;  
+.board-bg {
+  height: 100vh;
+  width: 100vw;
   display: flex;
-  flex-direction: column;  
-  align-items: center;  
-  justify-content: center; 
-  padding: 5px; 
-}  
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  background: linear-gradient(145deg, #081229, #0e1a3a); /* Dark blue gradient for the entire board */
+}
 
 .outer-box {
-    height: 90%;
-    width: 56%;
-    padding: 8px;
-    background-color: #3f0611;
+  height: 90%;
+  width: 56%;
+  padding: 0;
+  background: linear-gradient(145deg, #111d3a, #1d2e54); /* Enhanced blue gradient for contrast */
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.8); /* Stronger shadow for depth */
 }
 
 .inner-box {
-  height: 100%;  
-  width: 100%; 
-  border: solid #DCBE8B;
+  flex: 1;
+  border: solid #1e324c;
   border-width: 3px;
   display: flex;
-  flex-direction: column;  
-  align-items: center;  
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  border-radius: 10px;
+  position: relative;
 }
 
 .board {
-  height: 100%;  
+  height: 100%;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(8, 1fr);  
-  grid-template-rows: repeat(8, 1fr);  
-  background-color: #3f0611;
-  border: solid #DCBE8B;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  border: solid #1e324c;
   border-width: 3px;
   padding: 3px;
+  position: relative;
+}
+
+.column-labels {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: -40px;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  z-index: 1;
+  padding: 0 35px;
+}
+
+.row-labels {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: -40px;
+  width: 40px;
+  height: 100%;
+  z-index: 1;
+  justify-content: space-between;
+  padding: 35px 0;
+}
+
+.column-label, .row-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #e2e8f0; /* Soft gray for labels */
+  font-weight: bold;
+  background: linear-gradient(145deg, #1f334e, #2b4261); /* Clearer gradient for labels */
+  border: 2px solid #0f192e;
+  border-radius: 5px;
+  width: 30px;
+  height: 30px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.6); /* Slightly enhanced shadow */
 }
 
 .square {
@@ -45,43 +91,118 @@
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
-  transition: all 0s ease; /* Smooth transitions for hover effects */
+  transition: all 0.3s ease;
 }
 
 .square img {
-  width: 60%; 
-  height: 70%; 
+  width: 60%;
+  height: 70%;
 }
 
-.light {  
-  background-color: #DCBE8B; /* Beige color */
+.light {
+  background: linear-gradient(145deg, #334a6b, #3c5b7e); /* Muted blue for light squares */
 }
 
-.dark {  
-  background-color: #3f0611; /* Dark Red color */
+.dark {
+  background: linear-gradient(145deg, #1a2f49, #223b5d); /* Deep blue for dark squares */
 }
 
+/* Updated Interactive Highlights */
 .select {
-    background-color: rgba(236, 231, 69, 0.8); /* More pronounced highlight */
-    border: 2px solid #FFC107; /* Different shade for the border */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Shadow effect */
+  background-color: rgba(77, 139, 194, 0.6); /* Softer blue for selection */
+  border: 2px solid #4d8bc2;
+  box-shadow: 0 0 8px rgba(77, 139, 194, 0.5); /* Subtle glow */
 }
 
 .highlight {
-    background-color: rgba(236, 231, 69, 0.6); /* Brighter yellow */
-    border: 3px dashed rgba(236, 231, 69, 0.9); /* Dashed yellow border */
-    box-shadow: 0 0 15px rgba(236, 231, 69, 0.7); /* Yellowish shadow */
+  background-color: rgba(100, 178, 131, 0.6); /* Soft green for move highlights */
+  border: 2px solid #64b283;
+  box-shadow: 0 0 8px rgba(100, 178, 131, 0.5); /* Subtle glow */
 }
 
 .underAttack {
-    background-color: rgba(255, 69, 69, 0.5); /* Stronger red, slightly transparent */
-    border: 3px solid rgba(255, 0, 0, 1); /* Thicker solid red border */
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.8); /* Red shadow */
+  background-color: rgba(204, 93, 93, 0.6); /* Softer red for attack warnings */
+  border: 2px solid #cc5d5d;
+  box-shadow: 0 0 8px rgba(204, 93, 93, 0.5); /* Subtle glow */
 }
 
 .Check {
-    background-color: rgba(255, 99, 71, 0.6); /* Orange-red for differentiation */
-    border: 4px double rgba(255, 99, 71, 1); /* Double orange-red border */
-    box-shadow: 0 0 20px rgba(255, 99, 71, 0.9); /* Strong orange-red shadow */
+  background-color: rgba(220, 38, 38, 0.6); /* Red for check (danger) */
+  border: 2px solid #dc2626;
+  box-shadow: 0 0 12px rgba(220, 38, 38, 0.6); /* Noticeable glow for visibility */
+}
+
+.piece {
+  width: 80%;
+  height: auto;
+  transition: transform 0.2s;
+}
+
+.piece:hover {
+  transform: scale(1.1); /* Scale up on hover */
+}
+
+
+/* Modal Container */
+.promotion-modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8); /* Dark transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal Box */
+.promotion-modal {
+  background-color: #1e1e1e; /* Dark theme modal background */
+  color: #ffeb3b; /* Yellow highlight text */
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+/* Title */
+.promotion-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Options Container */
+.promotion-options {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+}
+
+/* Promotion Buttons */
+.promotion-button {
+  background-color: #ffeb3b; /* Yellow background */
+  color: #1e1e1e; /* Dark text */
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.promotion-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(255, 235, 59, 0.6); /* Yellow glow effect */
+}
+
+.promotion-button:active {
+  transform: scale(1);
+  box-shadow: none;
 }
 

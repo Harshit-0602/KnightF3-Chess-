@@ -5,6 +5,10 @@ import { revert } from "../../Logic/RevertMoves";
 import { Moves } from "../../Logic/PossibleMoves";
 import { Check_Validate } from "../../Logic/CheckLogic";
 import { CheckingMate } from "../../Logic/CheckingMate";
+import GameOverModal from "./GameOverModal";
+import { useState } from "react";
+import PromotionModal from "./Promotion";
+
 
 export const Cell = ({ row, col }) => {
   const [grid, setGrid] = useRecoilState(grid_init);
@@ -14,9 +18,17 @@ export const Cell = ({ row, col }) => {
   const [El_passant, setEl_passant] = useRecoilState(Elpassant);
   const [Castle, setCastle] = useRecoilState(Castling);
 
-  let isMate = false;
-  let play = "Black";
-  let winner = "Black";
+  const [isMate, setIsMate] = useState(false); // Whether it's checkmate
+  const [play, setPlay] = useState("Black"); // Current player
+  const [winner, setWinner] = useState("Black"); // Winner of the game
+
+  const [show, setShow] = useState(false);
+  const [promote, setPromote] = useState("");
+  // const [promotionPos, setPromotionPos] = useState(null); // Position of the pawn to be promoted
+
+  // let isMate = true;
+  // let play = "Black";
+  // let winner = "Black";
 
   let name = grid[row][col].piece;
   let piece = name.slice(1);
@@ -94,18 +106,58 @@ export const Cell = ({ row, col }) => {
           castleCopy.b.r.eligible = false;
         }
       }
-    }
-    else if (piece_name === "king")
-    {
+    } else if (piece_name === "king") {
       if (piece[0] == "w") {
         castleCopy.w.king = false;
-      }
-      else {
+      } else {
         castleCopy.b.king = false;
       }
     }
     setCastle(castleCopy);
   };
+
+const handlePromotion = (row, col, promotionPiece) => {
+  // Create a deep copy of the grid
+  let mat = grid.map((row) => row.map((cell) => ({ ...cell })));
+
+  // Update the promoted pawn's piece
+  mat[row][col].piece = `${mat[row][col].piece[0]}${promotionPiece}`; // Keep the same color and replace the type
+
+  // Validate check status for both kings
+  let nextTurn = t === "w" ? "b" : "w";
+  let oppKing = nextTurn === "w" ? K.w : K.b;
+  let myKing = t === "w" ? K.w : K.b;
+
+  // Check and update opponent's king
+  let Check_Object_Opp = Check_Validate(oppKing.pos.row, oppKing.pos.col, mat);
+
+  // Check and update current player's king (if needed)
+  let Check_Object_My = Check_Validate(myKing.pos.row, myKing.pos.col, mat);
+
+  // Update king states with the new check information
+  setK((prevK) => ({
+    ...prevK,
+    [t]: Check_Object_My,
+    [nextTurn]: Check_Object_Opp,
+  }));
+
+  // Check for checkmate or stalemate
+  let mateStatus = !CheckingMate(mat, Check_Object_Opp);
+  setIsMate(mateStatus);
+  setPlay(Check_Object_Opp.check.status ? "Check-Mate" : "Stale-Mate");
+
+  // Update the grid state
+  setGrid(mat);
+
+  // Switch turn to the opponent
+  // setT(nextTurn);
+
+  // Hide the promotion modal
+  setShow(false);
+};
+
+
+
 
   // Executes piece movement and updates relevant states (like en passant)
   const movePiece = (row, col, mat) => {
@@ -126,6 +178,11 @@ export const Cell = ({ row, col }) => {
       mat[row][rook_new_col].piece = mat[row][rook_col].piece;
       mat[row][rook_col].piece = "";
     }
+    if (piece_name === "p" && (row === 0 || row === 7)) {
+      setShow(true);
+      setPromote({ row, col });
+    }
+
     Blocking_Castling(piece, piece_name);
     let new_row = -1;
     let new_col = -1;
@@ -152,10 +209,14 @@ export const Cell = ({ row, col }) => {
     // Set a timeout for UI updates before checking for checkmate/stalemate
     setTimeout(() => {
       if (isMate) {
-        if (play == "Check-Mate") alert(`${play}!! ${winner} wins. Game Over`);
-        else alert(`${play}!! Match Draw. Game Over`);
+        if (play === "Check-Mate") {
+          GameOverModal({ show: true, winner, play });
+        } else {
+          GameOverModal({ show: true, winner: null, play });
+        }
       }
-    }, 100); // Adjust the timeout duration if necessary
+    }, 0);
+    // Adjust the timeout duration if necessary
 
     // Consolidate state updates in a single function
     updateStateAfterMove(mat);
@@ -165,7 +226,7 @@ export const Cell = ({ row, col }) => {
   const updateKing = (mat, nextT, curT, new_row, new_col) => {
     let oppKing = nextT === "w" ? K.w : K.b;
     let myKing = curT === "w" ? K.w : K.b;
-    winner = curT === "w" ? "White" : "Black";
+    setWinner(curT === "w" ? "White" : "Black");
     new_row = new_row === -1 ? myKing.pos.row : new_row;
     new_col = new_col === -1 ? myKing.pos.col : new_col;
 
@@ -184,17 +245,16 @@ export const Cell = ({ row, col }) => {
     }));
 
     // Determine if the game is in a mate position
-    isMate = !CheckingMate(mat, Check_Object_Opp);
-    play = Check_Object_Opp.check.status ? "Check-Mate" : "Stale-Mate";
+    setIsMate(!CheckingMate(mat, Check_Object_Opp));
+    setPlay(Check_Object_Opp.check.status ? "Check-Mate" : "Stale-Mate");
   };
 
-  const castle_row_checkandmove = (row,king_col,direction,mat) => {
+  const castle_row_checkandmove = (row, king_col, direction, mat) => {
     let myKing = t === "w" ? K.w : K.b;
     let myRook = t === "w" ? "wr" : "br";
-    console.log("Direction  = " + direction );
+    console.log("Direction  = " + direction);
     let end = direction == 1 ? 7 : 0;
-    for (let i = king_col + direction; i !=end; i = i + direction)
-    {
+    for (let i = king_col + direction; i != end; i = i + direction) {
       console.log(i);
       if (mat[row][i].piece != "") return;
     }
@@ -202,35 +262,29 @@ export const Cell = ({ row, col }) => {
     if (myKing.check.status) return;
     mat[row][king_col + direction].piece = mat[row][king_col].piece;
     mat[row][king_col].piece = "";
-    let ob1= Check_Validate(row, king_col + direction, mat);
-    mat[row][king_col + 2 * direction].piece = mat[row][king_col + direction].piece;
+    let ob1 = Check_Validate(row, king_col + direction, mat);
+    mat[row][king_col + 2 * direction].piece =
+      mat[row][king_col + direction].piece;
     mat[row][king_col + direction].piece = "";
-    let ob2=Check_Validate(row, king_col + 2 * direction, mat);
+    let ob2 = Check_Validate(row, king_col + 2 * direction, mat);
     mat[row][king_col].piece = mat[row][king_col + 2 * direction].piece;
     mat[row][king_col + 2 * direction].piece = "";
     if (ob1.check.status || ob2.check.status) return;
     mat[row][king_col + 2 * direction].highlight = true;
-  }
+  };
 
   const Castle_highlight = (row, col, mat) => {
     let myCastle = t == "w" ? Castle.w : Castle.b;
     // const castleCopy = JSON.parse(JSON.stringify(Castle));
-    if (
-      myCastle.king &&
-      myCastle.q_r.eligible
-    )
-    {
+    if (myCastle.king && myCastle.q_r.eligible) {
       // console.log("Q_R row = " + myCastle.q_r.row);
       // console.log("Q_R col = " + myCastle.q_r.col);
 
       castle_row_checkandmove(row, col, -1, mat);
-      }
-    if (
-      myCastle.king &&
-      myCastle.r.eligible 
-    )
+    }
+    if (myCastle.king && myCastle.r.eligible)
       castle_row_checkandmove(row, col, 1, mat);
-  }
+  };
 
   // Handles selecting a piece and updating possible moves
   const selectPiece = (row, col, mat) => {
@@ -247,7 +301,7 @@ export const Cell = ({ row, col }) => {
     let myKing = t === "w" ? K.w : K.b;
     const fn = Moves[piece];
     mat = fn(row, col, mat, myKing).grid;
- 
+
     // Handle en passant attack highlight for pawns
     if (
       piece == "p" &&
@@ -257,7 +311,7 @@ export const Cell = ({ row, col }) => {
       let next_row = El_passant.color == "w" ? 1 : -1;
       mat[next_row + El_passant.row][El_passant.col].underAttack = true;
     }
-    if(piece=="king") Castle_highlight(row, col, mat);
+    if (piece == "king") Castle_highlight(row, col, mat);
     setGrid(mat);
   };
 
@@ -278,8 +332,19 @@ export const Cell = ({ row, col }) => {
   };
 
   return (
-    <div className={`square ${color}`} onClick={click}>
-      {name !== "" && <img src={path} alt={name} />}
-    </div>
+    <>
+      <PromotionModal
+        show={show}
+        onPromote={handlePromotion}
+        color={t === "w" ? "w" : "b"}
+        row={promote.row}
+        col={promote.col}
+      />
+      <div className={`square ${color}`} onClick={click}>
+        {name !== "" && <img src={path} alt={name} />}
+      </div>
+      <GameOverModal show={isMate} winner={winner} play={play} />{" "}
+      {/* Render the modal */}
+    </>
   );
 };

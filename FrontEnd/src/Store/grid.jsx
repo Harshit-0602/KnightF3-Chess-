@@ -173,5 +173,5 @@ const stalemateGrid = [
 
 export const grid_init = atom({
   key: "grid_init",
-  default: white_grid, // Set the default value to the initialized grid
+  default: stalemateGrid, // Set the default value to the initialized grid
 });
