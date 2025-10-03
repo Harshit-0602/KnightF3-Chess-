@@ -12,11 +12,11 @@ import PromotionModal from "./Promotion";
 
 export const Cell = ({ row, col }) => {
   const [grid, setGrid] = useRecoilState(grid_init);
-  const [sel, setSel] = useRecoilState(selected);
-  const [t, setT] = useRecoilState(turn);
-  const [K, setK] = useRecoilState(king);
-  const [El_passant, setEl_passant] = useRecoilState(Elpassant);
-  const [Castle, setCastle] = useRecoilState(Castling);
+  // const [sel, setSel] = useRecoilState(selected);
+  // const [t, setT] = useRecoilState(turn);
+  // const [K, setK] = useRecoilState(king);
+  // const [El_passant, setEl_passant] = useRecoilState(Elpassant);
+  // const [Castle, setCastle] = useRecoilState(Castling);
 
   const [isMate, setIsMate] = useState(false); // Whether it's checkmate
   const [play, setPlay] = useState("Black"); // Current player
