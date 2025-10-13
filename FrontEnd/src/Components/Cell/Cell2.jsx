@@ -81,7 +81,7 @@ export const Cell = ({ row, col }) => {
 
         setPromote({ row: -1, col: -1 });
         setShow(false);
-
+      
         if (data.isMate) {
             setIsMate(data.isMate);
             setPlay(data.play);
