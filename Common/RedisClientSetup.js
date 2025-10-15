@@ -1,28 +1,66 @@
 const redis = require("redis");
 
-let client = null; // Start with a null client
+// We will now manage two separate, persistent client instances.
+let commandClient = null;
+let subscriberClient = null;
 
+/**
+ * Connects to Redis and creates two clients:
+ * 1. A command client for regular operations (HSET, HGETALL).
+ * 2. A dedicated subscriber client for Pub/Sub.
+ */
 async function connect() {
-    if (client) return client; // If already connected, return the client
+    // If both clients are already connected, we can skip this.
+    if (commandClient && subscriberClient) {
+        return;
+    }
 
-    client = redis.createClient();
-    client.on("error", err => console.log("Redis Client Error = " + err));
-    
+    console.log("Connecting to Redis...");
+
     try {
-        await client.connect();
-        return client;
+        // 1. Create and connect the primary client for regular commands.
+        const mainClient = redis.createClient();
+        mainClient.on("error", err => console.error("Redis Command Client Error:", err));
+        await mainClient.connect();
+        commandClient = mainClient;
+
+        // 2. Create a dedicated duplicate client for subscribing.
+        // This is the standard pattern as a subscribed client cannot issue other commands.
+        subscriberClient = commandClient.duplicate();
+        subscriberClient.on("error", err => console.error("Redis Subscriber Client Error:", err));
+        await subscriberClient.connect();
+
+        console.log("Both Redis command and subscriber clients connected successfully.");
+
     } catch (error) {
-        console.error("Redis Client Connection Error = " + error);
-        client = null; // Reset client on failure
-        return null;
+        console.error("Failed to connect one or more Redis clients:", error);
+        // Ensure we clean up properly on a partial or full connection failure.
+        if (commandClient) await commandClient.quit().catch(e => console.error(e));
+        if (subscriberClient) await subscriberClient.quit().catch(e => console.error(e));
+        commandClient = null;
+        subscriberClient = null;
     }
 }
 
-function getClient() {
-    if (!client) {
-        throw new Error("Redis client is not connected. Call connect() at server startup.");
+/**
+ * Returns the client instance used for sending commands (HSET, HGETALL, etc.).
+ */
+function getCommandClient() {
+    if (!commandClient) {
+        throw new Error("Redis command client is not connected. Call connect() at server startup.");
     }
-    return client;
+    return commandClient;
 }
 
-module.exports = { connect,getClient };
+/**
+ * Returns the client instance used ONLY for subscribing to Pub/Sub channels.
+ */
+function getSubscriberClient() {
+    if (!subscriberClient) {
+        throw new Error("Redis subscriber client is not connected. Call connect() at server startup.");
+    }
+    return subscriberClient;
+}
+
+module.exports = { connect, getCommandClient, getSubscriberClient };
+

@@ -1,4 +1,4 @@
-const { getClient } = require("../../../Common/RedisClientSetup.js"); // Adjust path as needed
+const { getCommandClient } = require("../../../Common/RedisClientSetup.js"); // Adjust path as needed
 
 const validateRequestAndConnectRedis = (req, res, next) => {
     // --- Part 1: Check for email ---
@@ -14,7 +14,7 @@ const validateRequestAndConnectRedis = (req, res, next) => {
     // --- Part 2: Connect to Redis ---
     let RedisClient;
     try {
-        RedisClient = getClient();
+        RedisClient = getCommandClient();
     } catch (error) {
         console.error("Middleware failed to get Redis Client => " + error);
         // End the request here if Redis is unavailable
