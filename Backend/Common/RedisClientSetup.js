@@ -31,6 +31,7 @@ async function connect() {
         await subscriberClient.connect();
 
         console.log("Both Redis command and subscriber clients connected successfully.");
+        return true;
 
     } catch (error) {
         console.error("Failed to connect one or more Redis clients:", error);
@@ -39,6 +40,7 @@ async function connect() {
         if (subscriberClient) await subscriberClient.quit().catch(e => console.error(e));
         commandClient = null;
         subscriberClient = null;
+        return false;
     }
 }
 

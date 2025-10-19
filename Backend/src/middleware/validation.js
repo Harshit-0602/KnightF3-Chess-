@@ -1,4 +1,4 @@
-const { getCommandClient } = require("../../../Common/RedisClientSetup.js"); // Adjust path as needed
+const { getCommandClient } = require("../../Common/RedisClientSetup.js"); // Adjust path as needed
 
 const validateRequestAndConnectRedis = (req, res, next) => {
     // --- Part 1: Check for email ---

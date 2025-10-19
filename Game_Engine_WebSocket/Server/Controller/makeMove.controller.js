@@ -1,23 +1,25 @@
-const { MakeMove } = require("../../Logic/Controller/MakeMove.js"); // Using your game logic
+import { MakeMove } from "../../Logic/Controller/MakeMove.js"; // Using your game logic
 
-const makeMoveController = async (data) => {
+export const makeMoveController = async (data) => {
     try {
         const { message, ws, commandClient } = data;
-        const { destinationCell, version: clientVersion } = message.payload;
+        const { cell} = message.payload;
 
         // 1. Fetch and validate the authoritative game state from Redis
         const rawGameInfo = await commandClient.hGetAll(`game:${ws.gameId}`);
         if (Object.keys(rawGameInfo).length === 0) {
-            return ws.send(JSON.stringify({ type: 'error', payload: { message: "Game not found." } }));
+            return ws.send(JSON.stringify({ type: 'Game_Unavailable_Error', payload: { message: "Game not found." } }));
         }
-        const authoritativeVersion = parseInt(rawGameInfo.version, 10);
+        // const authoritativeVersion = parseInt(rawGameInfo.version, 10);
+        // console.log(authoritativeVersion);
+        
 
-        // 2. Perform critical validations (version and turn)
-        if (clientVersion !== authoritativeVersion) {
-            return ws.send(JSON.stringify({ type: 'error', payload: { message: "Your game state is out of date. Move rejected." } }));
-        }
+        // // 2. Perform critical validations (version and turn)
+        // if (clientVersion !== authoritativeVersion) {
+        //     return ws.send(JSON.stringify({ type: 'error', payload: { message: "Your game state is out of date. Move rejected." } }));
+        // }
         if (rawGameInfo.turn !== ws.playerColor) {
-            return ws.send(JSON.stringify({ type: 'error', payload: { message: "Not your turn." } }));
+            return ws.send(JSON.stringify({ type: 'Not_Your_Turn_Error', payload: { message: "Not your turn." } }));
         }
 
         // 3. "Rehydrate" the state to pass to your game logic
@@ -28,15 +30,22 @@ const makeMoveController = async (data) => {
             king: JSON.parse(rawGameInfo.kingState),
             enPassant: JSON.parse(rawGameInfo.enPassantState),
             castling: JSON.parse(rawGameInfo.castlingState),
+            isMate: rawGameInfo.isMate === 'true',
+            result: JSON.parse(rawGameInfo.result),
+            winner: JSON.parse(rawGameInfo.winner),
+            promotion: JSON.parse(rawGameInfo.promotionState),
+            status_p1:rawGameInfo.status_p1,
+            status_p2:rawGameInfo.status_p2
         };
 
         // 4. Execute your core game logic to get the new state
-        const nextState = MakeMove(destinationCell, currentState);
-        const newVersion = authoritativeVersion + 1;
+        const nextState = MakeMove(cell, currentState);
 
         // 5. --- PREPARE THE REDIS PAYLOAD (as per your schema) ---
-        // This object contains all fields that change during a move.
         const newStateForRedis = {
+            ...rawGameInfo, // 1. Carry over all old fields (version, players, createdAt, etc.)
+
+            // 2. Overwrite the gameplay fields with their new values from nextState
             grid: JSON.stringify(nextState.grid),
             turn: nextState.turn,
             kingState: JSON.stringify(nextState.king),
@@ -44,22 +53,20 @@ const makeMoveController = async (data) => {
             castlingState: JSON.stringify(nextState.castling),
             promotionState: JSON.stringify(nextState.promotion),
             selectedState: JSON.stringify(nextState.selected),
-            
-            status: nextState.play === true ? 'active' : 'completed',
             isMate: nextState.isMate.toString(),
-            result: JSON.stringify(nextState.winner),
+            result: JSON.stringify(nextState.result),
+            winner: JSON.stringify(nextState.winner),
             
-            version: newVersion,
-            lastMoveAt: Date.now(),
-            // Storing the last move is useful for UI highlighting
-            lastMove: JSON.stringify({ from: currentState.selected, to: destinationCell }),
+            // 3. Update metadata fields for this specific move
+            // version: newVersion.toString(), // It's safer to store numbers as strings
+            // lastMoveAt: Date.now().toString(),
+            // lastMove: JSON.stringify({ from: currentState.selected, to: cell }),
         };
 
         // 6. Update Redis with the new state
         await commandClient.hSet(`game:${ws.gameId}`, newStateForRedis);
 
         // 7. --- PREPARE THE CLIENT PAYLOAD (as per your schema) ---
-        // This object is clean and contains only what the client needs to render.
         const payloadForBroadcast = {
             grid: nextState.grid,
             turn: nextState.turn,
@@ -68,26 +75,23 @@ const makeMoveController = async (data) => {
             enPassant: nextState.enPassant,
             castling: nextState.castling,
             isMate: nextState.isMate,
-            play: nextState.play,
-            winner: nextState.winner,
+            result: nextState.result,
+            winner:nextState.winner,
             promotion: nextState.promotion,
-            status: newStateForRedis.status, // Use the calculated status
-            version: newVersion
+            status_p1:nextState.status_p1,
+            status_p2:nextState.status_p2
         };
         
         // 8. PUBLISH the new state to the game channel
         await commandClient.publish(`game:${ws.gameId}`, JSON.stringify({
-            type: "game-update",
+            type: "Move_Made",
             payload: payloadForBroadcast
         }));
 
     } catch (error) {
         console.error("Error in makeMoveController:", error);
         if (data.ws && data.ws.readyState === 1) {
-            data.ws.send(JSON.stringify({ type: 'error', payload: { message: 'An error occurred while making your move.' } }));
+            data.ws.send(JSON.stringify({ type: 'Make_Move_Error', payload: { message: 'An error occurred while making your move.' } }));
         }
     }
 };
-
-module.exports = { makeMoveController };
-

@@ -1,11 +1,15 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-const GameOverModal = ({ show, winner, play }) => {
+export const GameOverModal = ({ show, winner, play }) => {
   if (!show) return null;
 
-  const onRestart = () => {
-    window.location.reload(); // Reload the page to restart the game
-  };
+  const navigate = useNavigate();
+
+    const onRestart = () => {
+        sessionStorage.clear(); // Clear the old game token and ID
+        navigate('/'); // Navigate back to the home page
+    };
 
   return (
     <div style={styles.overlay}>
@@ -72,4 +76,3 @@ styles.button[":hover"] = {
   backgroundColor: "#0056b3", // Darker shade for button hover effect
 };
 
-export default GameOverModal;

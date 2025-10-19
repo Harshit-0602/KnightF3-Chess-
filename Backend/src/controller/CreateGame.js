@@ -22,30 +22,25 @@ const CreateGame = async (req, res) => {
     // --- 3. Prepare the Data for Redis ---
     // We must convert nested objects and arrays into JSON strings to store them in a Redis Hash.
     const gameDataForRedis = {
-        // Core Game State
-        grid: JSON.stringify(initialGame.grid),
-        turn: initialGame.turn,
-        kingState: JSON.stringify(initialGame.king),
-        enPassantState: JSON.stringify(initialGame.enPassant),
-        castlingState: JSON.stringify(initialGame.castling),
-        promotionState: JSON.stringify(initialGame.promotion), // Will be null initially
-        selectedState: JSON.stringify(initialGame.selected), // Storing the initial selected state
-        
-        // Lifecycle & Metadata - Now fully mapped from your initialGame object
-        status: initialGame.play ? 'waiting' : 'completed', // 'play: true' maps to 'waiting'
-        isMate: initialGame.isMate.toString(), // Store boolean as a string 'false'
-        result: JSON.stringify(initialGame.winner), // Store winner as a JSON string (will be 'null')
-        version: 0,
-        createdAt: Date.now(),
-        lastMoveAt: null,
-        lastMove: null,
+    grid: JSON.stringify(initialGame.grid),
+    turn: initialGame.turn,
+    kingState: JSON.stringify(initialGame.king),
+    enPassantState: JSON.stringify(initialGame.enPassant),
+    castlingState: JSON.stringify(initialGame.castling),
+    promotionState: JSON.stringify(initialGame.promotion),
+    selectedState: JSON.stringify(initialGame.selected),
+    isMate: initialGame.isMate.toString(),
+    result:JSON.stringify(initialGame.play),
+    winner: JSON.stringify(initialGame.winner),
+    // version: "0",
+    // createdAt: Date.now().toString(),
+    player1_token: player1_token,
+    player2_token: player2_token,
+    player1_email: email,
+    status_p1:'waiting',
+    status_p2:"waiting"
+};
 
-        // Security & Session Data
-        player1_token: player1_token,
-        player2_token: player2_token,
-        player1_email: email,
-        player2_email: null, // Player 2 slot is open
-    };
     
     // --- 4. Store in Redis and Respond ---
     try {
@@ -59,7 +54,9 @@ const CreateGame = async (req, res) => {
             success: true,
             message: "Game created successfully.",
             gameId: gameId,
-            token: player1_token
+            token: player1_token,
+            status_p1:'waiting',
+            status_p2:"waiting"
         });
 
     } catch (redisError) {

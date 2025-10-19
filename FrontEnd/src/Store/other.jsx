@@ -9,6 +9,33 @@ export const selected = atom({
     },
 });
 
+export const isMate=atom({
+    key:"isMate",
+    default:false
+})
+
+export const result=atom({
+    key:"result",
+    default:""
+})
+
+export const winner=atom({
+    key:"winner",
+    default:""
+})
+
+export const promotion=atom({
+    key:"promotion",
+    default:{
+        row:-1,
+        col:-1
+    }
+})
+
+export const myColor=atom({
+    key:"myColor",
+    default:""
+})
 
 export const turn = atom({
     key: "turn",

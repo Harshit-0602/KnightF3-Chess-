@@ -70,7 +70,13 @@ const Generate_New_Game = () => {
         king: initialKingState,
         enPassant: { row: -1, col: -1, color: "none" }, // No en passant target at the start
         castling: initialCastleState,
-        promotion: null, // No active pawn promotion
+        promotion: {
+    isPromoting:false,
+    to:{
+      row:-1,
+      col:-1
+    }
+  }, // No active pawn promotion
 
         // Game lifecycle state
         play: true, // The game is active and playable

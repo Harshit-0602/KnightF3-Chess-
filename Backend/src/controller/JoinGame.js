@@ -50,7 +50,7 @@ const JoinGame = async (req, res) => {
         }
 
         // --- If we get here, we successfully claimed the spot! ---
-        await req.redisClient.hSet(`game:${gameId}`, 'status', 'active');
+        // await req.redisClient.hSet(`game:${gameId}`, 'status', 'active');
         await req.redisClient.persist(`game:${gameId}`); // Remove the TTL
 
         // Fetch the player2_token to send back to the client
@@ -60,7 +60,9 @@ const JoinGame = async (req, res) => {
             success: true,
             message: "Game Joined successfully.",
             gameId: gameId,
-            token: player2_token
+            token: player2_token,
+            status_p1:'waiting',
+            status_p2:"waiting"
         });
 
     } catch (redisError) {

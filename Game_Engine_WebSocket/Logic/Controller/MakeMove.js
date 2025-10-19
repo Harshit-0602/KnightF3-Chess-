@@ -78,7 +78,7 @@ export const MakeMove = (destinationCell, CurState) => {
     !selected.isSelected ||     // nothing selected
     !piece ||                   // selected cell is empty
     piece[0] !== turn ||         // not this player's turn
-    !grid[destinationCell.row][destinationCell.col].highlight // invalid destination
+    (!grid[destinationCell.row][destinationCell.col].highlight && !grid[destinationCell.row][destinationCell.col].underAttack)// invalid destination
   ) {
     // Reset selection and revert highlights
     return {
@@ -111,9 +111,16 @@ export const MakeMove = (destinationCell, CurState) => {
   }
 
   // --- 5. Pawn promotion ---
-  let promotion = null;
+  let promotion = {
+    isPromoting:false,
+    to:{
+      row:-1,
+      col:-1
+    }
+  };
+
   if (piece.slice(1) === "p" && (row === 0 || row === 7)) {
-    promotion = { row, col };
+    promotion = { isPromoting:true,to:{row, col }};
   }
 
   // --- 6. Update castling, en passant, and king states ---
@@ -130,9 +137,11 @@ export const MakeMove = (destinationCell, CurState) => {
     enPassant: newElpassantState,
     castling: newCastleState,
     isMate,
-    play,
+    result:play,
     winner,
     promotion,
+    status_p1:CurState.status_p1,
+    status_p2:CurState.status_p2
   };
 };
 

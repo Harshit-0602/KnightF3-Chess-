@@ -1,5 +1,5 @@
 import "./Board.css";
-import { Cell } from "../Cell/Cell";
+import { Cell } from "../Cell/Cell2";
 
 const Board = () => {
   const renderCell = () => {

@@ -2,7 +2,7 @@ import React from "react";
 // im
 // import "./ // Custom styles
 
-const PromotionModal = ({ show, onPromote, row, col }) => {
+export const PromotionModal = ({ show, onPromote, row, col }) => {
   if (!show) return null;
 
   const handleSelect = (piece) => {
@@ -44,4 +44,3 @@ const PromotionModal = ({ show, onPromote, row, col }) => {
   );
 };
 
-export default PromotionModal;
