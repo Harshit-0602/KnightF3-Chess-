@@ -1,15 +1,14 @@
 // src/Components/Board/Board.jsx
 
-import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { useGame } from '../../GameProvider';
 import { grid_init } from '../../Store/grid';
-import { selected, turn, king, isMate, winner, promotion, myColor } from '../../Store/other';
+import { selected, turn, king, isMate, winner, promotion, myColor, result } from '../../Store/other';
 import './Board.css';
 
 import { Cell } from '../Cell/Cell2';
-import { PromotionModal } from '../Cell/Promotion';
-import { GameOverModal } from '../Cell/GameOverModal';
+import { PromotionModal } from '../Extra/Promotion';
+import { GameOverModal } from '../Extra/GameOverModal';
 
 export const Board = () => {
     // Read all necessary state from Recoil
@@ -19,6 +18,7 @@ export const Board = () => {
     const kingState = useRecoilValue(king);
     const mateState = useRecoilValue(isMate);
     const winnerState = useRecoilValue(winner);
+    const resultState=useRecoilValue(result);
     const promotionState = useRecoilValue(promotion);
     const playerColor = useRecoilValue(myColor); // This is the key: 'w' or 'b'
 
@@ -102,8 +102,8 @@ export const Board = () => {
 
     return (
         <>
-            <PromotionModal show={promotionState.isPromoting} onPromote={handlePromotion} color={currentTurn} />
-            <GameOverModal show={mateState} winner={winnerState} />
+            <PromotionModal show={promotionState.isPromoting} onPromote={handlePromotion} color={currentTurn} playerColor={playerColor} />
+            <GameOverModal show={mateState} result={resultState} winner={winnerState} />
             <div className="board-bg">
                 <div className="outer-box">
                     <div className="inner-box">

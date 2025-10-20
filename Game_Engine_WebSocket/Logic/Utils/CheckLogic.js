@@ -1,286 +1,127 @@
-// Object to store the final status of the king regarding check and pinned pieces
-let Final_object = {
-    pos: {
-        row: -1,
-        col:-1
-    },
-    check: {
-        status: false, // Indicates whether the king is in check
-        allowed: [], // Array to track allowed moves while in check
-    },
-    pinned: [], // Array to track pinned pieces
-};
+const isValidPosition = (row, col) => row >= 0 && row < 8 && col >= 0 && col < 8;
 
-// Object to keep track of the king's status regarding check and pinned pieces
-let king_underAttack = {
-    check: false,
-    pinned_row: -1,
-    pinned_col: -1,
-    allowed: [],
-};
+/**
+ * A pure, stateless function that traces a single line of sight from the king.
+ * It identifies the first threat (either a check or a pin) it encounters.
+ * @returns {object|null} An object describing the threat, or null if no threat is found.
+ */
+const traceLine = (kingRow, kingCol, dr, dc, grid, myColor, opponentPieceTypes) => {
+    let path = [];
+    let friendlyPieceOnPath = null;
 
-// Helper function to check if a given position is valid on the chessboard
-const isValidPosition = (row, col) =>
-  row >= 0 && row < 8 && col >= 0 && col < 8;
+    let r = kingRow + dr;
+    let c = kingCol + dc;
 
-// Reset the king_underAttack object for each validation check
-const resetKingUnderAttack = () => {
-    king_underAttack = {
-        check: false,
-        pinned_row: -1,
-        pinned_col: -1,
-        allowed: [],
-    };
-};
-const resetFinalObject = () => {
-    Final_object = {
-        pos: {
-            row: -1,
-            col: -1,
-        },
-        check: {
-            status: false, // Indicates whether the king is in check
-            allowed: [], // Array to track allowed moves while in check
-        },
-        pinned: [], // Array to track pinned pieces
-    };
-};
+    while (isValidPosition(r, c)) {
+        const piece = grid[r][c].piece;
 
-// Handle the attack logic for the current square
-const handleAttack = (row, col, validOpponent, grid, myColor, king) => {
-    const cur = grid[row][col].piece;
-    
-    // If the current square is empty, the move is valid
-    if (cur === "") {
-        return true; // Empty square, valid move
-    }
-    // If it's a friendly piece, it blocks the path
-    else if (cur[0] === myColor) {
-        return false; // Same color piece blocks the path
-    }
-    // If the current square has an opponent's piece
-    else if (!validOpponent.includes(cur)) {
-        return false; // Invalid opponent piece
-    } else {
-        if ((cur.slice(1) == "p")) {
-            // console.log(Math.abs(king.row - row));
-            if (Math.abs(king.row - row) > 1) return false;
-        }
-        if (cur.slice(1) == "king") {
-            let rowDiff = Math.abs(king.row - row);
-            let colDiff = Math.abs(king.col - col);
-
-            // Check if the kings are too close (adjacent or invalid)
-            if (rowDiff > 1 || colDiff > 1) {
-                return false; // Invalid move since kings are too close
+        if (piece) {
+            if (piece.startsWith(myColor)) { // It's a friendly piece
+                if (friendlyPieceOnPath) return null; // Second friendly piece, so the line is blocked.
+                friendlyPieceOnPath = { row: r, col: c };
+            } else { // It's an opponent piece
+                const pieceType = piece.slice(1);
+                if (opponentPieceTypes.includes(pieceType)) {
+                    // This is a valid attacker for this line of sight.
+                    path.push([r, c]); // The attacker's square is part of the path.
+                    if (friendlyPieceOnPath) {
+                        // A friendly piece was in the way, so it's a pin.
+                        return { type: 'pin', pinned: friendlyPieceOnPath, path };
+                    } else {
+                        // No friendly piece was in the way, so it's a direct check.
+                        return { type: 'check', path };
+                    }
+                }
+                // It's an opponent piece, but not a valid attacker on this line.
+                return null;
             }
+        } else { // It's an empty square.
+            path.push([r, c]);
         }
-        king_underAttack.check = true; // Mark as under attack
-        king_underAttack.allowed.push([row, col]); // Track the allowed attack position
-        return true; // Found a valid attack
+        r += dr;
+        c += dc;
     }
+    return null; // Reached the edge of the board.
 };
 
-// Recursive function to simulate moving the king
-const makeMove = (
-    myColor,
-    row,
-    col,
-    nextRow,
-    nextCol,
-    pinned,
-    grid,
-    validOpponent,
-    king
-) => {
-    // console.log(row+" "+col);
-    
-    // If pinned or out of bounds, stop the recursion
-    if (pinned > 1 || !isValidPosition(row, col)) return false;
-
-    const cur = grid[row][col].piece; // Current piece on the board
-    let moveFound = false; // Track if a valid move was found
-
-    // if (cur != "") {
-    //     console.log("CURRENT = "+cur+" = "+row+ " , "+col);   
-    // }
-    
-    // If the current square is empty, continue moving
-    if (cur === "") {
-        moveFound = makeMove(
-            myColor,
-            row + nextRow,
-            col + nextCol,
-            nextRow,
-            nextCol,
-            pinned,
-            grid,
-            validOpponent,
-            king
-        );
-    }
-    // If the current square has a friendly piece, increase the pinned count
-    else if (cur[0] === myColor) {
-        moveFound = makeMove(
-            myColor,
-            row + nextRow,
-            col + nextCol,
-            nextRow,
-            nextCol,
-            pinned + 1,
-            grid,
-            validOpponent,
-            king
-        );
-    }
-    // If the current square has an opponent's piece, check for an attack
-    else {
-        moveFound = handleAttack(row, col, validOpponent, grid, myColor, king);
-        // console.log("LAST = " + cur + " = " + row + " , " + col+" = "+moveFound);
-        return moveFound;
-    }
-
-    // If no valid move was found, return false
-    if (!moveFound) return false;
-
-    // If the square was empty, push the move into allowed moves
-    if (cur === "") king_underAttack.allowed.push([row, col]);
-    else {
-        king_underAttack.check = false; // Reset check status
-        king_underAttack.pinned_row = row; // Update pinned piece position
-        king_underAttack.pinned_col = col;
-    }
-
-    return true; // Valid move found
-};
-
-// Array of knight moves (relative positions)
-const knight_moves = [
-    [-2, -1],
-    [-2, +1],
-    [+2, -1],
-    [+2, +1],
-    [-1, -2],
-    [-1, +2],
-    [+1, -2],
-    [+1, +2],
-];
-
-// Function to check if the king is under threat from a knight
-const knightCheck = (row, col, opponent, grid) => {
-    for (let [dr, dc] of knight_moves) {
-        const newRow = row + dr; // Calculate new row position
-        const newCol = col + dc; // Calculate new column position
-        // Check if the new position is valid
-        if (isValidPosition(newRow, newCol)) {
-            const piece = grid[newRow][newCol].piece; // Get the piece at the new position
-            // If it's the opponent's knight
-            if (piece === opponent) {
-                Final_object.check.status = true; // King is in check
-                Final_object.check.allowed.push([newRow, newCol]); // Track allowed knight attack
-                return true;
-            }
-        }
-    }
-    return false; // No knight threat found
-};
-
-// Function to process the results of attack checks
-const resultMaking = (o) => {
-    if (o.check) {
-        Final_object.check.status = true; // Update check status
-        Final_object.check.allowed = o.allowed; // Update allowed moves
-    } else if (o.pinned_row !== -1) {
-        // If a piece is pinned, record its position and allowed moves
-        Final_object.pinned.push({
-            row: o.pinned_row,
-            col: o.pinned_col,
-            pinned_allowed: o.allowed,
-        });
-    }
-};
-
-// Function to check the king's threats based on its current position
-// Deep clone helper function
-const deepClone = (obj) => JSON.parse(JSON.stringify(obj));
-
-// Function to check the king's threats based on its current position
+/**
+ * The main validation function.
+ * This is the only function that creates and returns the legacy object structure.
+ */
 export const Check_Validate = (row, col, mat) => {
-    // console.log("Checking  = " + row +" " +col);
-    let grid = mat.map((row) => row.map((cell) => ({ ...cell }))); // Create a deep copy of the board
-    let king = grid[row][col]; // Get the king piece
-    let opponent = king.piece[0] === "b" ? "w" : "b"; // Determine the opponent's color
-    // console.log("Opp color = " + opponent);
-    resetFinalObject(Final_object);
-    // console.log(Final_object);
+    // The final object structure that MUST be returned.
+    const Final_object = {
+        pos: { row, col },
+        check: { status: false, allowed: [] },
+        pinned: [],
+    };
 
-    
+    const grid = mat;
+    const kingPiece = grid[row]?.[col]?.piece;
+    if (!kingPiece) return Final_object; // King not found, return default.
 
-    // Deep clone Final_object to avoid mutating immutable properties
-    
-    // Define the valid opponent pieces for each direction
-    const directions = [
-      {
-        dir: [0, -1],
-        pieces: [`${opponent}r`, `${opponent}q`, `${opponent}king`],
-      }, // Left
-      {
-        dir: [0, 1],
-        pieces: [`${opponent}r`, `${opponent}q`, `${opponent}king`],
-      }, // Right
-      {
-        dir: [-1, 0],
-        pieces: [`${opponent}r`, `${opponent}q`, `${opponent}king`],
-      }, // Up
-      {
-        dir: [1, 0],
-        pieces: [`${opponent}r`, `${opponent}q`, `${opponent}king`],
-      }, // Down
-      {
-        dir: [-1, -1],
-        pieces: [`${opponent}b`, `${opponent}q`, `${opponent}king`, `bp`],
-      }, // Up-Left
-      {
-        dir: [-1, 1],
-        pieces: [`${opponent}b`, `${opponent}q`, `${opponent}king`, `bp`],
-      }, // Up-Right
-      {
-        dir: [1, -1],
-        pieces: [`${opponent}b`, `${opponent}q`, `${opponent}king`, `wp`],
-      }, // Down-Left
-      {
-        dir: [1, 1],
-        pieces: [`${opponent}b`, `${opponent}q`, `${opponent}king`, `wp`],
-      }, // Down-Right
+    const myColor = kingPiece[0];
+    const opponentColor = myColor === 'w' ? 'b' : 'w';
+
+    // Temporary arrays to collect ALL threats before processing.
+    let allChecksPaths = [];
+    let allPins = [];
+
+    // 1. Find all line-of-sight threats (from Rooks, Bishops, Queens).
+    const lineDirections = [
+        { dr: 0, dc: -1, pieces: ['r', 'q'] }, { dr: 0, dc: 1, pieces: ['r', 'q'] },
+        { dr: -1, dc: 0, pieces: ['r', 'q'] }, { dr: 1, dc: 0, pieces: ['r', 'q'] },
+        { dr: -1, dc: -1, pieces: ['b', 'q'] }, { dr: -1, dc: 1, pieces: ['b', 'q'] },
+        { dr: 1, dc: -1, pieces: ['b', 'q'] }, { dr: 1, dc: 1, pieces: ['b', 'q'] },
     ];
-    
-    // Check for threats in each direction
-    for (let { dir, pieces } of directions) {
-        makeMove(
-            king.piece[0],
-            row + dir[0],
-            col + dir[1],
-            dir[0],
-            dir[1],
-            0,
-            grid,
-            pieces,
-            {row,col}
-        );
-        // console.log(king_underAttack);
-        resultMaking(king_underAttack);
-        resetKingUnderAttack(); // Reset for the next direction check
+    for (const { dr, dc, pieces } of lineDirections) {
+        const threat = traceLine(row, col, dr, dc, grid, myColor, pieces);
+        if (threat) {
+            if (threat.type === 'check') {
+                allChecksPaths.push(...threat.path);
+            } else if (threat.type === 'pin') {
+                // Format the pin object as required by the legacy structure.
+                allPins.push({
+                    row: threat.pinned.row,
+                    col: threat.pinned.col,
+                    pinned_allowed: threat.path
+                });
+            }
+        }
+    }
+
+    // 2. Find all Knight checks.
+    const knightMoves = [ [-2, -1], [-2, 1], [2, -1], [2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2] ];
+    for (const [dr, dc] of knightMoves) {
+        const r = row + dr;
+        const c = col + dc;
+        if (isValidPosition(r, c) && grid[r][c].piece === `${opponentColor}k`) {
+            allChecksPaths.push([r, c]); // Add attacker's square.
+        }
+    }
+
+    // 3. Find all Pawn checks.
+    const pawnAttackDR = myColor === 'w' ? -1 : 1;
+    const pawnAttacks = [[pawnAttackDR, -1], [pawnAttackDR, 1]];
+    for (const [dr, dc] of pawnAttacks) {
+        const r = row + dr;
+        const c = col + dc;
+        if (isValidPosition(r, c) && grid[r][c].piece === `${opponentColor}p`) {
+            allChecksPaths.push([r, c]); // Add attacker's square.
+        }
+    }
+
+    // 4. Assemble the final legacy object from all collected threats.
+    if (allChecksPaths.length > 0) {
+        Final_object.check.status = true;
+        // Use a Map to ensure all squares in the 'allowed' path are unique.
+        // This correctly handles double-check scenarios.
+        const uniquePaths = [...new Map(allChecksPaths.map(item => [`${item[0]}-${item[1]}`, item])).values()];
+        Final_object.check.allowed = uniquePaths;
     }
     
-    // Check for threats from knights
-    knightCheck(row, col, `${opponent}k`, grid); // Check knight threats against the king
-    
-    // Update the cloned object with the king's current position
-    let clonedFinalObject = deepClone(Final_object);
-    clonedFinalObject.pos.row = row;
-    clonedFinalObject.pos.col = col;
-    // console.log(clonedFinalObject);
-    
-    // Return the cloned object with updated check and pin status
-    return clonedFinalObject;
+    Final_object.pinned = allPins;
+
+    return Final_object;
 };
+

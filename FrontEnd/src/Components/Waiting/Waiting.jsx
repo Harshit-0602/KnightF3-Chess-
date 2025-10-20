@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './Waiting.css';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * A waiting screen for the player who created the game.
@@ -8,7 +9,8 @@ import './Waiting.css';
  */
 const Waiting = () => {
     const { gameId } = useParams();
-    
+    const navigate=useNavigate();
+    if(!sessionStorage.getItem("gameId")) navigate("/");
     // State to give feedback when the user copies the ID
     const [copyText, setCopyText] = useState('Copy Game ID'); // Changed text
 

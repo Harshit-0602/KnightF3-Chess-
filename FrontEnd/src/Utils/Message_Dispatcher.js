@@ -33,6 +33,7 @@ export const Message_Dispatcher=(type,payload,color,tools)=>{
         }
         default: // handles error
         {
+            console.log(payload.message);
             console.log("Some Error Occurred while Connecting to the WebSocket or Talking to it");
         } 
     }

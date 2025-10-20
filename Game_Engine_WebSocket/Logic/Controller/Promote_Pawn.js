@@ -54,7 +54,7 @@ export const Promote_Pawn = (promoteTo, CurState) => {
 
     // --- 3. Update the piece on the board ---
     const { row, col } = promotion.to; // Get coordinates from the promotion state
-    const color = turn;                // The current player's turn is the color of the promoting pawn
+    const color = turn=='w'?'b':'w';                // The current player's turn is the color of the promoting pawn
     newGrid[row][col].piece = color + promoteTo; // e.g., 'w' + 'q' = 'wq'
 
     // --- 4. Update king state, check, and checkmate status ---

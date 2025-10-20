@@ -6,7 +6,7 @@ export const promotePawnController = async (data) => {
     const gameKey = `game:${ws.gameId}`;
 
     // A quick initial validation on the payload
-    if (!['q', 'n', 'r', 'b'].includes(promoteTo)) {
+    if (!['q', 'k', 'r', 'b'].includes(promoteTo)) {
         return ws.send(JSON.stringify({ type: 'error', payload: { message: 'Invalid promotion piece.' } }));
     }
 
@@ -23,7 +23,7 @@ export const promotePawnController = async (data) => {
             await commandClient.unwatch();
             return ws.send(JSON.stringify({ type: 'error', payload: { message: 'No pawn is awaiting promotion.' } }));
         }
-        if (rawGameInfo.turn !== ws.playerColor) {
+        if (rawGameInfo.turn === ws.playerColor) {
             await commandClient.unwatch();
             return ws.send(JSON.stringify({ type: 'error', payload: { message: 'Not your turn to promote.' } }));
         }
