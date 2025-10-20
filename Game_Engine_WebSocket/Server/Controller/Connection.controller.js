@@ -1,4 +1,5 @@
 import { getCommandClient } from "../../../Backend/Common/RedisClientSetup.js";
+import { closeGame } from "./closeGame.controller.js";
 import { giveMoveController } from "./giveMove.controller.js";
 import { makeMoveController } from "./makeMove.controller.js";
 import { promotePawnController } from "./promotePawn.controller.js";
@@ -130,6 +131,12 @@ export const ConnectionHandler = async (ws, req) => {
                     await promotePawnController(dataContext);
                     console.log("Handler for 'promotePawn' would be called here.");
                     break;
+
+                case 'Game_Over':
+                    await closeGame(dataContext);
+                    console.log("Handler for 'Game Over' would be called here");
+                    break;
+                    
 
                 default:
                     console.log(`Received unknown message type: ${message.type}`);
