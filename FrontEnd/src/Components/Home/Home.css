@@ -1,0 +1,141 @@
+/* General container and layout styles */
+.home-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #111827; /* Dark gray-blue background */
+    color: #F9FAFB; /* Off-white text */
+    font-family: 'Inter', sans-serif;
+    padding: 1rem;
+}
+
+.form-wrapper {
+    width: 100%;
+    max-width: 28rem; /* 448px */
+    padding: 1.5rem; /* Reduced padding */
+    background-color: #1F2937; /* Lighter gray-blue */
+    border-radius: 0.75rem; /* 12px */
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    border: 1px solid #374151;
+}
+
+/* Header styles */
+.header {
+    text-align: center;
+    margin-bottom: 1.5rem; /* Reduced margin */
+}
+
+.title {
+    font-size: 2.25rem; /* 36px */
+    font-weight: 700;
+    color: #22D3EE; /* Cyan */
+}
+
+.subtitle {
+    margin-top: 0.5rem;
+    color: #9CA3AF; /* Muted gray */
+}
+
+/* Form section styles */
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* Reduced gap */
+}
+
+.form-title {
+    font-size: 1.5rem; /* 24px */
+    font-weight: 600;
+}
+
+/* Input group styles */
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    font-size: 0.875rem; /* 14px */
+    font-weight: 500;
+    color: #D1D5DB;
+    margin-bottom: 0.25rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.75rem 0.75rem;
+    color: white;
+    background-color: #374151;
+    border: 1px solid #4B5563;
+    border-radius: 0.375rem; /* 6px */
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-group input::placeholder {
+    color: #6B7280;
+}
+
+.input-group input:focus {
+    border-color: #22D3EE;
+    box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.4);
+}
+
+/* Button styles */
+.btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    color: white;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    outline: none;
+}
+
+.btn:focus {
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.5);
+}
+
+.btn-create {
+    background-color: #16A34A; /* Green */
+}
+
+.btn-create:hover {
+    background-color: #15803D;
+}
+
+.btn-join {
+    background-color: #2563EB; /* Blue */
+}
+
+.btn-join:hover {
+    background-color: #1D4ED8;
+}
+
+/* Divider styles */
+.divider {
+    position: relative;
+    text-align: center;
+    margin: 1.5rem 0; /* Reduced margin */
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #4B5563;
+}
+
+.divider span {
+    position: relative;
+    background-color: #1F2937;
+    padding: 0 0.5rem;
+    font-size: 0.875rem;
+    color: #6B7280;
+}
+

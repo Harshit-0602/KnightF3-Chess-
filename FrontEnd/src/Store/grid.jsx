@@ -1,7 +1,7 @@
 import { atom } from "recoil";
 
 // Initial Chess Board Setup with Modified Properties
-const grid = [
+const white_grid = [
   [
     { piece: "br", highlight: false, underAttack: false }, // Black rook
     { piece: "bk", highlight: false, underAttack: false }, // Black knight
@@ -84,7 +84,94 @@ const grid = [
   ], // White pieces
 ];
 
+
+
+// const stalemateGrid = [
+//   [
+//     { piece: "br", highlight: false, underAttack: false }, // Black rook
+//     { piece: "", highlight: false, underAttack: false }, // Empty cell
+//     { piece: "", highlight: false, underAttack: false }, // Black bishop
+//     { piece: "", highlight: false, underAttack: false }, // Empty cell
+//     { piece: "bking", highlight: false, underAttack: false }, // Black king
+//     { piece: "", highlight: false, underAttack: false }, // Empty cell
+//     { piece: "", highlight: false, underAttack: false }, // Empty cell
+//     { piece: "", highlight: false, underAttack: false }, // Black rook
+//   ], // Black pieces
+//   [
+//     { piece: "wp", highlight: false, underAttack: false }, // Black pawn
+//     { piece: "", highlight: false, underAttack: false }, // Empty cell
+//     { piece: "", highlight: false, underAttack: false }, // Black pawn
+//     { piece: "", highlight: false, underAttack: false }, // Empty cell
+//     { piece: "bp", highlight: false, underAttack: false }, // Empty cell
+//     { piece: "", highlight: false, underAttack: false }, // Empty cell
+//     { piece: "", highlight: false, underAttack: false }, // Empty cell
+//     { piece: "", highlight: false, underAttack: false }, // Empty cell
+//   ], // Empty row
+//   [
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//   ], // Empty row
+//   [
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "wp", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//   ], // Empty row
+//   [
+//     { piece: "bp", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "bp", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//   ], // Empty row
+//   [
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//   ], // Empty row
+//   [
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "wp", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//     { piece: "", highlight: false, underAttack: false }, // Empty row
+//   ], // Empty row
+//   [
+//     { piece: "", highlight: false, underAttack: false }, // White pawn
+//     { piece: "", highlight: false, underAttack: false }, // Empty cell
+//     { piece: "wb", highlight: false, underAttack: false }, // Empty cell
+//     { piece: "", highlight: false, underAttack: false }, // Empty cell
+//     { piece: "wking", highlight: false, underAttack: false }, // White king
+//     { piece: "", highlight: false, underAttack: false }, // White pawn
+//     { piece: "", highlight: false, underAttack: false }, // Empty cell
+//     { piece: "", highlight: false, underAttack: false }, // Empty cell
+//   ], // White pieces
+// ];
+
+
+
 export const grid_init = atom({
   key: "grid_init",
-  default: grid, // Set the default value to the initialized grid
+  default: white_grid, // Set the default value to the initialized grid
 });
